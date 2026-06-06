@@ -1,16 +1,18 @@
 @echo off
-rem Gradle startup script for Windows
+setlocal enabledelayedexpansion
+
 set DIR=%~dp0
-set JAVA_OPTS=-Xmx64m -Xms64m
+set DEFAULT_JVM_OPTS=-Xmx64m -Xms64m
 
-if not "%JAVA_HOME%" == "" goto okJavaHome
-set JAVA_EXE=java.exe
-%JAVA_EXE% -version
-goto okJava
+rem Determine JAVA_EXE
+if defined JAVA_HOME (
+    set JAVA_EXE=%JAVA_HOME%\bin\java.exe
+) else (
+    set JAVA_EXE=java.exe
+)
 
-:okJava
-set JAVA_EXE=%JAVA_HOME%\bin\java.exe
-
-:okJavaHome
+rem Run Gradle Wrapper
 set CLASSPATH=%DIR%gradle\wrapper\gradle-wrapper.jar
-"%JAVA_EXE%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
+
+endlocal
