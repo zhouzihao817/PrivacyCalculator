@@ -1,0 +1,115 @@
+name: Build Privacy Calculator APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        api-level: 34
+        build-tools-version: '34.0.0'
+    
+    - name: Create directories
+      run: |
+        mkdir -p build/gen build/classes build/outputs
+    
+    - name: Generate R.java
+      run: |
+        $ANDROID_HOME/build-tools/34.0.0/aapt package \
+          -f -m \
+          -S app/src/main/res \
+          -J build/gen \
+          -I $ANDROID_HOME/platforms/android-34/android.jar \
+          -M app/src/main/AndroidManifest.xml
+        echo "R.java generated"
+        find build/gen -name "*.java"
+    
+    - name: Compile Java files
+      run: |
+        $ANDROID_HOME/build-tools/34.0.0/aapt package \
+          -f -m \
+          -S app/src/main/res \
+          -J build/gen \
+          -I $ANDROID_HOME/platforms/android-34/android.jar \
+          -M app/src/main/AndroidManifest.xml
+        
+        javac -d build/classes \
+          -classpath $ANDROID_HOME/platforms/android-34/android.jar \
+          -sourcepath "app/src/main/java:build/gen" \
+          app/src/main/java/com/privacy/calculator/*.java \
+          build/gen/com/privacy/calculator/*.java
+        echo "Java compilation completed"
+        find build/classes -name "*.class"
+    
+    - name: Convert to DEX
+      run: |
+        $ANDROID_HOME/build-tools/34.0.0/d8 \
+          --output build/classes.dex \
+          build/classes
+        echo "DEX conversion completed"
+        ls -la build/
+    
+    - name: Package APK
+      run: |
+        $ANDROID_HOME/build-tools/34.0.0/aapt package \
+          -f \
+          -M app/src/main/AndroidManifest.xml \
+          -S app/src/main/res \
+          -I $ANDROID_HOME/platforms/android-34/android.jar \
+          -F build/outputs/app-debug.apk
+        
+        $ANDROID_HOME/build-tools/34.0.0/aapt add \
+          build/outputs/app-debug.apk \
+          build/classes.dex
+        
+        echo "APK packaged"
+        ls -la build/outputs/
+    
+    - name: Generate debug keystore
+      run: |
+        keytool -genkey -v \
+          -keystore debug.keystore \
+          -alias androiddebugkey \
+          -keyalg RSA \
+          -keysize 2048 \
+          -validity 10000 \
+          -storepass android \
+          -keypass android \
+          -dname "CN=Android Debug,O=Android,C=US"
+        echo "Debug keystore generated"
+    
+    - name: Sign APK
+      run: |
+        $ANDROID_HOME/build-tools/34.0.0/apksigner \
+          sign \
+          --ks debug.keystore \
+          --ks-key-alias androiddebugkey \
+          --ks-pass pass:android \
+          --key-pass pass:android \
+          --out build/outputs/PrivacyCalculator-debug.apk \
+          build/outputs/app-debug.apk
+        echo "APK signed"
+        ls -la build/outputs/
+    
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: PrivacyCalculator-APK
+        path: build/outputs/PrivacyCalculator-debug.apk
+        retention-days: 30

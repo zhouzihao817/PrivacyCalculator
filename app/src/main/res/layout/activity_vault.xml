@@ -12,31 +12,81 @@
         android:padding="16dp"
         android:background="#000000">
 
-        <Button android:id="@+id/btnBack" android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="← 返回" android:textColor="#FFFFFF" android:background="#333333" />
-        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-            android:text="隐私保险箱" android:textSize="20sp" android:textColor="#FFFFFF" android:gravity="center" />
+        <Button android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:textColor="#FFFFFF"
+            android:background="#333333" />
+        <TextView android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Vault"
+            android:textSize="20sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center" />
     </LinearLayout>
 
-    <HorizontalScrollView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:background="#000000" android:scrollbars="none">
-        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:orientation="horizontal" android:padding="8dp">
-            <Button android:id="@+id/tabPhotos" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="📷 照片" android:textColor="#FFFFFF" android:background="#333333" android:padding="12dp" />
-            <Button android:id="@+id/tabFiles" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="📁 文件" android:textColor="#FFFFFF" android:background="#333333" android:padding="12dp" android:layout_marginStart="8dp" />
-            <Button android:id="@+id/tabApps" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="📱 APP" android:textColor="#FFFFFF" android:background="#333333" android:padding="12dp" android:layout_marginStart="8dp" />
-            <Button android:id="@+id/tabNotes" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="📝 笔记" android:textColor="#FFFFFF" android:background="#333333" android:padding="12dp" android:layout_marginStart="8dp" />
-            <Button android:id="@+id/tabBookmarks" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="🔖 书签" android:textColor="#FFFFFF" android:background="#333333" android:padding="12dp" android:layout_marginStart="8dp" />
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000"
+        android:scrollbars="none">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp">
+            <Button android:id="@+id/tabPhotos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Photos"
+                android:textColor="#FFFFFF"
+                android:background="#333333"
+                android:padding="12dp" />
+            <Button android:id="@+id/tabFiles"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Files"
+                android:textColor="#FFFFFF"
+                android:background="#333333"
+                android:padding="12dp"
+                android:layout_marginStart="8dp" />
+            <Button android:id="@+id/tabApps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apps"
+                android:textColor="#FFFFFF"
+                android:background="#333333"
+                android:padding="12dp"
+                android:layout_marginStart="8dp" />
+            <Button android:id="@+id/tabNotes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Notes"
+                android:textColor="#FFFFFF"
+                android:background="#333333"
+                android:padding="12dp"
+                android:layout_marginStart="8dp" />
+            <Button android:id="@+id/tabBookmarks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bookmarks"
+                android:textColor="#FFFFFF"
+                android:background="#333333"
+                android:padding="12dp"
+                android:layout_marginStart="8dp" />
         </LinearLayout>
     </HorizontalScrollView>
 
-    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-        <LinearLayout android:id="@+id/tabContainer" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="vertical" android:padding="16dp" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <LinearLayout android:id="@+id/tabContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp" />
     </ScrollView>
 </LinearLayout>
