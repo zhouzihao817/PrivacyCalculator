@@ -25,91 +25,24 @@ jobs:
         api-level: 34
         build-tools-version: '34.0.0'
     
-    - name: Create directories
+    - name: Download Gradle Wrapper
       run: |
-        mkdir -p build/gen build/classes build/outputs
+        mkdir -p gradle/wrapper
+        curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.0.0/gradle/wrapper/gradle-wrapper.jar
+        echo "distributionBase=GRADLE_USER_HOME" > gradle/wrapper/gradle-wrapper.properties
+        echo "distributionPath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
+        echo "distributionUrl=https\\://services.gradle.org/distributions/gradle-8.0-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
+        echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
+        echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
+        chmod +x gradlew
     
-    - name: Generate R.java
-      run: |
-        $ANDROID_HOME/build-tools/34.0.0/aapt package \
-          -f -m \
-          -S app/src/main/res \
-          -J build/gen \
-          -I $ANDROID_HOME/platforms/android-34/android.jar \
-          -M app/src/main/AndroidManifest.xml
-        echo "R.java generated"
-        find build/gen -name "*.java"
-    
-    - name: Compile Java files
-      run: |
-        $ANDROID_HOME/build-tools/34.0.0/aapt package \
-          -f -m \
-          -S app/src/main/res \
-          -J build/gen \
-          -I $ANDROID_HOME/platforms/android-34/android.jar \
-          -M app/src/main/AndroidManifest.xml
-        
-        javac -d build/classes \
-          -classpath $ANDROID_HOME/platforms/android-34/android.jar \
-          -sourcepath "app/src/main/java:build/gen" \
-          app/src/main/java/com/privacy/calculator/*.java \
-          build/gen/com/privacy/calculator/*.java
-        echo "Java compilation completed"
-        find build/classes -name "*.class"
-    
-    - name: Convert to DEX
-      run: |
-        $ANDROID_HOME/build-tools/34.0.0/d8 \
-          --output build/classes.dex \
-          build/classes
-        echo "DEX conversion completed"
-        ls -la build/
-    
-    - name: Package APK
-      run: |
-        $ANDROID_HOME/build-tools/34.0.0/aapt package \
-          -f \
-          -M app/src/main/AndroidManifest.xml \
-          -S app/src/main/res \
-          -I $ANDROID_HOME/platforms/android-34/android.jar \
-          -F build/outputs/app-debug.apk
-        
-        $ANDROID_HOME/build-tools/34.0.0/aapt add \
-          build/outputs/app-debug.apk \
-          build/classes.dex
-        
-        echo "APK packaged"
-        ls -la build/outputs/
-    
-    - name: Generate debug keystore
-      run: |
-        keytool -genkey -v \
-          -keystore debug.keystore \
-          -alias androiddebugkey \
-          -keyalg RSA \
-          -keysize 2048 \
-          -validity 10000 \
-          -storepass android \
-          -keypass android \
-          -dname "CN=Android Debug,O=Android,C=US"
-        echo "Debug keystore generated"
-    
-    - name: Sign APK
-      run: |
-        $ANDROID_HOME/build-tools/34.0.0/apksigner \
-          sign \
-          --ks debug.keystore \
-          --ks-key-alias androiddebugkey \
-          --ks-pass pass:android \
-          --key-pass pass:android \
-          --out build/outputs/PrivacyCalculator-debug.apk \
-          build/outputs/app-debug.apk
-        echo "APK signed"
-        ls -la build/outputs/
+    - name: Build with Gradle
+      run: ./gradlew assembleDebug --no-daemon --stacktrace
     
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
+      if: success()
       with:
         name: PrivacyCalculator-APK
-        path: build/outputs/PrivacyCalculator-debug.apk
+        path: app/build/outputs/apk/debug/*.apk
         retention-days: 30
